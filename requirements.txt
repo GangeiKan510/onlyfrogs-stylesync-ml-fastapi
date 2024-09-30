@@ -71,7 +71,7 @@ python-jwt==2.0.1
 python-multipart==0.0.12
 referencing==0.35.1
 rembg==2.0.59
-requests==2.11.1
+requests
 requests-toolbelt==0.7.0
 rich==13.8.1
 rpds-py==0.20.0
