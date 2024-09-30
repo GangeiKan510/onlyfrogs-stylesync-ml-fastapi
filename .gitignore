@@ -1,0 +1,104 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Virtual environments
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Pyrebase credentials or tokens (if any)
+*.token
+
+# Firebase service account JSON key (if applicable)
+firebase-adminsdk.json
+
+# Environments
+*.env
+.env.*
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite3
+
+# Python egg files
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+wheels/
+*.manifest
+*.spec
+
+# Cache and temp files
+pip-log.txt
+pip-delete-this-directory.txt
+*~ 
+*.swp
+*.swo
+*~
+.idea/
+
+# Distribution / Packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Pytest
+.cache/
+
+# MyPy
+.mypy_cache/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+
+# Test results
+.tox/
+.nox/
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Editor and OS-specific files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.iml
+*.sublime-project
+*.sublime-workspace
+
+# Uvicorn log files (if created)
+uvicorn.log
+
+# Docker ignore
+docker-compose.override.yml
