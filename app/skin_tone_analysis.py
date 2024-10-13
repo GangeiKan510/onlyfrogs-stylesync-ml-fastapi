@@ -41,13 +41,34 @@ def get_skin_tone_from_processed_image(processed_image: np.ndarray):
 
         face_cascade = cv2.CascadeClassifier(
             cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+
         gray = cv2.cvtColor(processed_image, cv2.COLOR_BGR2GRAY)
-        faces = face_cascade.detectMultiScale(gray, 1.1, 4)
+
+        faces = face_cascade.detectMultiScale(
+            gray,
+            scaleFactor=1.1,
+            minNeighbors=5,
+            minSize=(50, 50)
+        )
 
         if len(faces) == 0:
-            return {"error": "No faces detected"}
+            raise HTTPException(
+                status_code=400, detail="No faces detected. Please retake the image with a clear face.")
+
+        if len(faces) > 1:
+            raise HTTPException(
+                status_code=400, detail="Multiple faces detected. Please ensure only one face is visible.")
 
         x, y, w, h = faces[0]
+
+        img_height, img_width = processed_image.shape[:2]
+        face_area = w * h
+        img_area = img_height * img_width
+
+        if face_area / img_area < 0.05:
+            raise HTTPException(
+                status_code=400, detail="Face is too small. Please retake the image with a closer view of your face.")
+
         face_roi = processed_image[y:y + h, x:x + w]
         h_roi, w_roi = face_roi.shape[:2]
         skin_sample_region = face_roi[int(
@@ -74,8 +95,11 @@ def get_skin_tone_from_processed_image(processed_image: np.ndarray):
             "complements": complement_colors
         }
 
+    except HTTPException as e:
+        raise e
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(
+            status_code=500, detail=f"Internal error during processing: {str(e)}")
 
 
 def classify_season_and_sub_season(skin_tone_rgb):
