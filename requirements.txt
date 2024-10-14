@@ -76,8 +76,7 @@ Pygments==2.18.0
 PyMatting==1.1.12
 pyparsing==3.1.4
 pyproject_hooks==1.2.0
-Pyrebase==3.0.27
-Pyrebase4==4.8.0
+pyrebase4==4.8.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 python-jwt==2.0.1
