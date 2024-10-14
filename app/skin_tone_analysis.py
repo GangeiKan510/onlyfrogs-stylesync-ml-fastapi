@@ -10,6 +10,7 @@ import mediapipe as mp
 mp_face_detection = mp.solutions.face_detection
 mp_drawing = mp.solutions.drawing_utils
 
+
 def process_image(image_bytes: bytes):
     image = Image.open(BytesIO(image_bytes))
 
@@ -21,6 +22,13 @@ def process_image(image_bytes: bytes):
         np_image = cv2.cvtColor(np_image, cv2.COLOR_GRAY2RGB)
 
     return np_image
+
+
+def enhance_image(image: np.ndarray):
+    img_yuv = cv2.cvtColor(image, cv2.COLOR_BGR2YUV)
+    img_yuv[:, :, 0] = cv2.equalizeHist(img_yuv[:, :, 0])
+    enhanced_img = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2BGR)
+    return enhanced_img
 
 
 async def analyze_skin_tone(image_url: str):
@@ -40,11 +48,13 @@ async def analyze_skin_tone(image_url: str):
 
 def get_skin_tone_from_processed_image(processed_image: np.ndarray):
     try:
-        processed_image = cv2.cvtColor(processed_image, cv2.COLOR_RGB2BGR)
+        processed_image = enhance_image(processed_image)
+
+        processed_image_rgb = cv2.cvtColor(processed_image, cv2.COLOR_BGR2RGB)
 
         # Use MediaPipe Face Detection
-        with mp_face_detection.FaceDetection(model_selection=1, min_detection_confidence=0.5) as face_detection:
-            results = face_detection.process(cv2.cvtColor(processed_image, cv2.COLOR_BGR2RGB))
+        with mp_face_detection.FaceDetection(model_selection=0, min_detection_confidence=0.6) as face_detection:
+            results = face_detection.process(processed_image_rgb)
 
             if not results.detections:
                 raise HTTPException(
@@ -54,7 +64,8 @@ def get_skin_tone_from_processed_image(processed_image: np.ndarray):
             detection = results.detections[0]
             bboxC = detection.location_data.relative_bounding_box
             ih, iw, _ = processed_image.shape
-            x, y, w, h = int(bboxC.xmin * iw), int(bboxC.ymin * ih), int(bboxC.width * iw), int(bboxC.height * ih)
+            x, y, w, h = int(bboxC.xmin * iw), int(bboxC.ymin *
+                                                   ih), int(bboxC.width * iw), int(bboxC.height * ih)
 
             face_width, face_height = w, h
             face_area = face_width * face_height
