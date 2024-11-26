@@ -1,4 +1,3 @@
-# background_removal.py
 import requests
 from fastapi import HTTPException
 from rembg import remove
@@ -8,10 +7,25 @@ from datetime import datetime
 import pyrebase
 from config import firebase_config  # Import firebase_config from config
 
-
 # Initialize Firebase with the imported config
 firebase = pyrebase.initialize_app(firebase_config)
 storage = firebase.storage()
+
+
+def preprocess_image(image: Image.Image, max_size: int = 512):
+    """
+    Resize the image to fit within the specified max_size while preserving aspect ratio.
+    """
+    original_width, original_height = image.size
+    if max(original_width, original_height) > max_size:
+        scaling_factor = max_size / max(original_width, original_height)
+        new_size = (
+            int(original_width * scaling_factor),
+            int(original_height * scaling_factor)
+        )
+        # Use LANCZOS for high-quality resizing
+        image = image.resize(new_size, Image.Resampling.LANCZOS)
+    return image
 
 
 async def remove_background(image_url: str):
@@ -22,7 +36,10 @@ async def remove_background(image_url: str):
                 status_code=400, detail="Failed to download the image.")
 
         input_image = Image.open(BytesIO(response.content))
-        output_image = remove(input_image)
+
+        resized_image = preprocess_image(input_image)
+
+        output_image = remove(resized_image)
 
         output_image_io = BytesIO()
         output_image.save(output_image_io, format='PNG')
