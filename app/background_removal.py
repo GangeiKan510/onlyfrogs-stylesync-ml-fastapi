@@ -1,7 +1,7 @@
 import requests
 from fastapi import HTTPException
 from rembg import remove
-from PIL import Image, UnidentifiedImageError
+from PIL import Image
 from io import BytesIO
 from datetime import datetime
 import pyrebase
@@ -33,16 +33,9 @@ async def remove_background(image_url: str):
         response = requests.get(image_url)
         if response.status_code != 200:
             raise HTTPException(
-                status_code=400, detail="Failed to download the image."
-            )
+                status_code=400, detail="Failed to download the image.")
 
-        try:
-            input_image = Image.open(BytesIO(response.content))
-            if input_image.format == "WEBP":
-                input_image = input_image.convert("RGBA")
-        except UnidentifiedImageError:
-            raise HTTPException(
-                status_code=400, detail="Unsupported image format.")
+        input_image = Image.open(BytesIO(response.content))
 
         resized_image = preprocess_image(input_image)
 
